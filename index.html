@@ -638,6 +638,7 @@
     flex-shrink: 0;
   }
   .a11y-pass { background: rgba(160, 168, 151, 0.25); color: #2d3a26; }
+  .a11y-warn { background: rgba(200, 150, 60, 0.20); color: #6b4a14; }
   .a11y-fail { background: rgba(180, 80, 80, 0.18); color: #6e2a2a; }
 
   /* ================================================================
@@ -1387,6 +1388,72 @@
     font-weight: 400;
   }
 
+  /* ================================================================
+     Print / PDF export
+     Goal: keep all brand colors, swatches and images visible in PDF,
+     give the document a sensible page rhythm and prevent ugly breaks.
+     ================================================================ */
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+  @media print {
+    /* Force browsers to keep background colors and images — without this
+       Chrome strips every colored swatch in print mode. */
+    *, *::before, *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    html, body {
+      background: #faf8f5 !important;
+    }
+    body {
+      font-size: 10.5pt;
+      line-height: 1.55;
+    }
+    .doc-shell {
+      max-width: none;
+      padding: 0;
+      margin: 0;
+    }
+    /* Each major section starts on a new page so colors / typography /
+       logos don't get split awkwardly. */
+    section.guide-section {
+      page-break-before: always;
+      break-before: page;
+      padding: 0 0 var(--space-12);
+      border-bottom: none;
+    }
+    section.guide-section:first-of-type,
+    .guide-header + section.guide-section {
+      page-break-before: auto;
+      break-before: auto;
+    }
+    /* Avoid breaking inside tight visual blocks */
+    .swatch-card,
+    .a11y-card,
+    .ctx-card,
+    .font-specimen,
+    .type-row,
+    .dodont-card,
+    .logo-card,
+    .spacing-row,
+    figure,
+    img {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    h1, h2, h3, .section-title, .subsection-title {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+    /* Hide the table of contents links underline in print */
+    a { text-decoration: none !important; color: inherit !important; }
+  }
 </style>
 </head>
 <body>
@@ -1739,7 +1806,7 @@
     </div>
 
     <h3 class="subsection-title">Lesbarkeit prüfen</h3>
-    <p class="subsection-lead">Welche Farben funktionieren als Text auf welchem Hintergrund? Hier die wichtigsten Paare.</p>
+    <p class="subsection-lead">Welche Farben funktionieren als Text auf welchem Hintergrund? Hier die wichtigsten Paare. <strong>✓</strong> erfüllt WCAG AA für Fließtext, <strong>!</strong> nur dekorativ für große Headlines auf Bildern, <strong>✗</strong> nicht verwenden.</p>
 
     <div class="a11y-grid">
       <div class="a11y-card" style="background: #faf8f5; color: #424c58;">
@@ -1762,11 +1829,25 @@
         <span class="text-sample">Mitternacht auf Salbei</span>
         <span class="a11y-badge a11y-pass">✓</span>
       </div>
+      <div class="a11y-card" style="background: #a0a897; color: #faf8f5;">
+        <span class="text-sample">Naturweiß auf Salbei</span>
+        <span class="a11y-badge a11y-warn">!</span>
+      </div>
+      <div class="a11y-card" style="background: #a3b2b9; color: #424c58;">
+        <span class="text-sample">Mitternacht auf Nebel</span>
+        <span class="a11y-badge a11y-pass">✓</span>
+      </div>
+      <div class="a11y-card" style="background: #a3b2b9; color: #faf8f5;">
+        <span class="text-sample">Naturweiß auf Nebel</span>
+        <span class="a11y-badge a11y-warn">!</span>
+      </div>
       <div class="a11y-card" style="background: #a3b2b9; color: #83939a;">
         <span class="text-sample">Schiefer auf Nebel</span>
         <span class="a11y-badge a11y-fail">✗</span>
       </div>
     </div>
+
+    <p class="subsection-lead" style="margin-top: var(--space-6); font-size: 0.9375rem;"><strong>Zu „Naturweiß auf Salbei &amp; Nebel":</strong> Die Kombination wirkt weich und elegant — der Kontrast (≈ 2,2–2,5:1) reicht aber nicht für Lesetexte oder UI-Elemente. Einsetzbar als Stimmungsträger über Bildern, in großen Hero-Headlines oder für rein dekorative Schriftzüge, wo es nicht auf strenge Lesbarkeit ankommt. Für Buttons, Fließtext, Produktinfos und alles, was funktional ist: Mitternacht auf Salbei/Nebel verwenden.</p>
   </section>
 
   <!-- ============================================================
